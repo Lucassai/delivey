@@ -99,7 +99,7 @@ function Login() {
               type="submit"
               className="rounded bg-orange-400 flex justify-center hover:bg-orange-600 text-white w-1/2 py-2"
               onClick={() => {
-                navigate("/");
+                navigate("/home");
               }}
             >
               <span>Entrar</span>

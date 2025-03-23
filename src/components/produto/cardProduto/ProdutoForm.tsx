@@ -26,9 +26,19 @@ export function ProdutoForm({
     id: 0,
     descricao: "",
   });
-  const [produto, setProduto] = useState<Produto>(
-    initialProduto || ({} as Produto)
-  );
+
+  // Defina valores iniciais para o produto
+  const [produto, setProduto] = useState<Produto>({
+    id: 0,
+    nome: "",
+    descricao: "",
+    preco: 0,
+    calorias: 0,
+    artesanal: false,
+    foto: "",
+    categoria: { id: 0, descricao: "" },
+    ...initialProduto, // Sobrescreve com valores iniciais, se houver
+  });
 
   const { usuario, handleLogout } = useContext(AuthContext);
   const token = usuario.token;
@@ -79,24 +89,24 @@ export function ProdutoForm({
   }, [idCard]);
 
   useEffect(() => {
-    setProduto({
-      ...produto,
+    setProduto((prevProduto) => ({
+      ...prevProduto,
       categoria: categoria,
-    });
-  }, [categoria, navigate]);
+    }));
+  }, [categoria]);
 
   // Atualizar os dados do produto
   const atualizarEstado = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // Converte o valor de "artesanal" para booleano
+    const valorFinal = name === "artesanal" ? value === "true" : value;
+
     setProduto({
       ...produto,
       [name]: ["preco", "calorias"].includes(name)
-        ? Number(value)
-        : value === "true"
-        ? true
-        : value === "false"
-        ? false
-        : value,
+        ? Number(valorFinal) // Converte para número se for "preco" ou "calorias"
+        : valorFinal, // Mantém o valor original ou booleano
       categoria: categoria,
     });
   };
@@ -128,7 +138,7 @@ export function ProdutoForm({
   };
 
   return (
-    <div className=" flex flex-col mx-auto items-center p-4">
+    <div className="flex flex-col mx-auto items-center p-4">
       <h1 className="text-2xl md:text-4xl text-center my-4 md:my-8">
         {idCard ? "Editar Produto" : "Cadastrar Produto"}
       </h1>
@@ -141,8 +151,8 @@ export function ProdutoForm({
             name="nome"
             required
             className="border-2 border-slate-700 rounded p-2 text-sm md:text-base"
-            value={produto.nome}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+            value={produto.nome || ""}
+            onChange={atualizarEstado}
           />
         </div>
 
@@ -153,8 +163,8 @@ export function ProdutoForm({
             name="preco"
             required
             className="border-2 border-slate-700 rounded p-2 text-sm md:text-base"
-            value={produto.preco}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+            value={produto.preco || 0}
+            onChange={atualizarEstado}
           />
         </div>
 
@@ -165,8 +175,8 @@ export function ProdutoForm({
             name="calorias"
             required
             className="border-2 border-slate-700 rounded p-2 text-sm md:text-base"
-            value={produto.calorias}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+            value={produto.calorias || 0}
+            onChange={atualizarEstado}
           />
         </div>
 
@@ -205,8 +215,8 @@ export function ProdutoForm({
             name="foto"
             required
             className="border-2 border-slate-700 rounded p-2 text-sm md:text-base"
-            value={produto.foto}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+            value={produto.foto || ""}
+            onChange={atualizarEstado}
           />
         </div>
 
